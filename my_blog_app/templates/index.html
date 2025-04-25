@@ -44,7 +44,11 @@
 
     {% if posts %} {% for post in posts %}
     <article>
-      <h2><a href="#">{{ post['title'] }}</a></h2>
+      <h2>
+        <a href="{{ url_for('post', post_id=post['id']) }}"
+          >{{ post['title'] }}</a
+        >
+      </h2>
       <!-- Link placeholder -->
       <div class="post-meta">
         Published on: {{ post['published_date'] }}
@@ -60,7 +64,7 @@
           endif %}
         </p>
       </div>
-      <a href="#">Read More</a>
+      <a href="{{ url_for('post', post_id=post['id']) }}">Read More</a>
       <!-- Link placeholder -->
     </article>
     {% endfor %} {% else %}

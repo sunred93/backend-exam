@@ -1,0 +1,103 @@
+<!-- templates/post.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Use the post title in the page title -->
+    <title>{{ post['title'] }} - My Blog</title>
+    <!-- You can link CSS files here later -->
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+      }
+      .post-meta {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 1em;
+      }
+      .post-content {
+        margin-top: 1em;
+        line-height: 1.6;
+      }
+      /* Basic styling for tags later */
+      .tags span {
+        background-color: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-right: 5px;
+        font-size: 0.8em;
+      }
+      hr {
+        margin: 2em 0;
+      }
+      /* Styles for comments section later */
+      .comments {
+        margin-top: 2em;
+      }
+      .comment {
+        border: 1px solid #eee;
+        padding: 1em;
+        margin-bottom: 1em;
+      }
+      .comment-meta {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 0.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="{{ url_for('index') }}">&laquo; Back to Home</a>
+    </nav>
+
+    <article>
+      <h1>{{ post['title'] }}</h1>
+      <div class="post-meta">
+        Published on: {{ post['published_date'] }}
+        <!-- Tags will go here later -->
+        <div class="tags">
+          <!-- Example: <span>tag1</span> <span>tag2</span> -->
+        </div>
+        <!-- Edit link placeholder -->
+        | <a href="#">Edit Post</a>
+      </div>
+      <div class="post-content">
+        <!-- Use nl2br filter later if needed, or handle paragraphs -->
+        {{ post['content'] }}
+      </div>
+    </article>
+
+    <hr />
+
+    <!-- Comments Section Placeholder -->
+    <section class="comments">
+      <h2>Comments</h2>
+      <!-- Comment listing will go here -->
+      <p>No comments yet.</p>
+
+      <h3>Add a Comment</h3>
+      <!-- Comment form will go here -->
+      <form action="#" method="post">
+        <div>
+          <label for="author">Name:</label><br />
+          <input type="text" id="author" name="author" required />
+        </div>
+        <div>
+          <label for="comment_content">Comment:</label><br />
+          <textarea
+            id="comment_content"
+            name="content"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <div>
+          <button type="submit">Submit Comment</button>
+        </div>
+      </form>
+    </section>
+  </body>
+</html>

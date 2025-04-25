@@ -3,7 +3,7 @@
 import os
 import sqlite3 # Import sqlite3 to catch its specific errors if needed
 import click   # Import click for CLI commands
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 from dotenv import load_dotenv
 import db     
 from faker import Faker
@@ -96,6 +96,20 @@ def index():
         app.logger.error(f"Error fetching posts for index page: {e}")
         # You might want a proper error page later
         return "<h1>An error occurred fetching posts.</h1>", 500
+    
+
+@app.route('/post/<int:post_id>')
+def post(post_id):
+    """Shows a single blog post identified by post_id."""
+    # Remove the try block
+    post = db.get_post_by_id(post_id)
+    if post is None:
+        # If get_post_by_id returns None, the post wasn't found
+        abort(404) # Let Flask handle this exception
+
+    # TODO: Fetch comments and tags for this post later
+
+    return render_template('post.html', post=post)
 
 # --- Add more routes and logic below ---
 # We'll add the route for individual posts next
