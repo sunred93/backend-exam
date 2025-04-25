@@ -3,7 +3,7 @@
 import os
 import sqlite3 # Import sqlite3 to catch its specific errors if needed
 import click   # Import click for CLI commands
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request, redirect, url_for, flash
 from dotenv import load_dotenv
 import db     
 from faker import Faker
@@ -242,21 +242,42 @@ def index():
         # You might want a proper error page later
         return "<h1>An error occurred fetching posts.</h1>", 500
 
-
-@app.route('/post/<int:post_id>')
+@app.route('/post/<int:post_id>', methods=('GET', 'POST'))
 def post(post_id):
-    """Shows a single blog post identified by post_id, including tags."""
+    """Shows a single blog post and handles comment submission."""
+
+    # Fetch post data (needed for both GET and POST redirect)
     post_data = db.get_post_by_id(post_id)
     if post_data is None:
-        # If get_post_by_id returns None, the post wasn't found
-        abort(404) # Let Flask handle this exception
+        abort(404)
 
-    # Fetch the tags specifically for this post
+    if request.method == 'POST':
+        # Handle comment submission
+        author = request.form.get('author')
+        content = request.form.get('content')
+
+        if not author or not content:
+            # Basic validation - flash a message (optional but good UX)
+            flash('Author Name and Comment content are required!', 'error')
+        else:
+            comment_id = db.add_comment(post_id, author, content)
+            if comment_id:
+                flash('Comment added successfully!', 'success')
+            else:
+                flash('Failed to add comment.', 'error')
+            # Redirect back to the same post page after submission
+            # This prevents form re-submission on refresh (Post/Redirect/Get pattern)
+            return redirect(url_for('post', post_id=post_id))
+
+    # --- Handle GET request (or fall through after POST redirect) ---
+    # Fetch tags and comments for display
     tags_data = db.get_tags_for_post(post_id)
-    # TODO: Fetch comments for this post later
+    comments_data = db.get_comments_for_post(post_id)
 
-    # Pass both the post data and the tags data to the template
-    return render_template('post.html', post=post_data, tags=tags_data)
+    return render_template('post.html',
+                           post=post_data,
+                           tags=tags_data,
+                           comments=comments_data) # Pass comments to template
 
 
 @app.route('/tag/<string:tag_name>')

@@ -310,4 +310,66 @@ def get_posts_by_tag(tag_name):
             conn.close()
     return posts
 
+
+def get_comments_for_post(post_id):
+    """Retrieves all comments for a specific post, ordered by date ascending.
+
+    Args:
+        post_id (int): The ID of the post.
+
+    Returns:
+        list[sqlite3.Row]: A list of comment objects (dictionary-like Rows).
+                           Returns an empty list if no comments are found
+                           or an error occurs.
+    """
+    comments = []
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT id, author, content, published_date
+            FROM comments
+            WHERE post_id = ?
+            ORDER BY published_date ASC
+        """, (post_id,))
+        comments = cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"Database error in get_comments_for_post for post {post_id}: {e}")
+    finally:
+        if conn:
+            conn.close()
+    return comments
+
+def add_comment(post_id, author, content):
+    """Adds a new comment to a specific post.
+
+    Args:
+        post_id (int): The ID of the post to comment on.
+        author (str): The name of the comment author.
+        content (str): The text content of the comment.
+
+    Returns:
+        int | None: The ID of the newly inserted comment if successful,
+                    otherwise None.
+    """
+    conn = None
+    last_id = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO comments (post_id, author, content)
+            VALUES (?, ?, ?)
+        """, (post_id, author, content))
+        conn.commit()
+        last_id = cursor.lastrowid
+    except sqlite3.Error as e:
+        print(f"Database error in add_comment for post {post_id}: {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+    return last_id
 # --- We will add functions for comments, updating posts later ---
