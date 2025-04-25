@@ -36,23 +36,155 @@ def init_db_command():
 
 # --- Database Seeding Command ---
 @app.cli.command('seed-db')
-@click.option('--posts', default=10, help='Number of posts to create.')
+@click.option('--posts', default=25, help='Number of posts to create (max based on static data).') # Default to max available
 def seed_db_command(posts):
-    """Seeds the database with fake posts and tags."""
-    fake = Faker()
-    # fake_no = Faker('nb_NO') # Example if you want Norwegian data
+    """Seeds the database with sample blog posts and tags from static data."""
+    fake = Faker() # Keep for potential random tags if needed
 
-    click.echo(f'Seeding database with {posts} posts...')
+    # Define your static posts (using the Gemini data)
+    static_posts = [
+        {
+            "title": "Discovering the Charm of Gamlebyen in Fredrikstad",
+            "content": "Took a delightful day trip to Fredrikstad's Gamlebyen (Old Town) recently. The well-preserved fortifications and charming cobblestone streets were like stepping back in time. Definitely worth a visit if you're in the area!",
+            "tags": ["travel", "history", "fredrikstad", "norway", "gamlebyen"]
+        },
+        {
+            "title": "My First Attempt at Making Norwegian Lefse",
+            "content": "I decided to try my hand at making traditional Norwegian lefse. Let's just say it was an... experience! While the first few attempts were less than perfect, I'm determined to master this delicious flatbread. Any seasoned lefse bakers out there with advice?",
+            "tags": ["baking", "food", "norwegian", "lefse", "tradition"]
+        },
+        {
+            "title": "A Guide to the Best Beaches in Vestfold for Summer",
+            "content": "With summer just around the corner, it's time to start thinking about beach days! Vestfold boasts some stunning stretches of coastline. This guide highlights a few of my favorite spots for swimming, sunbathing, and enjoying the sea air.",
+            "tags": ["summer", "beach", "vestfold", "norway", "travel"]
+        },
+        {
+            "title": "Exploring the Viking History of Vestfold County",
+            "content": "Vestfold has a rich Viking heritage, and there are fascinating historical sites scattered throughout the region. I spent some time exploring the Midgard Viking Centre and the Oseberg burial mound, and it truly brought history to life.",
+            "tags": ["history", "viking", "vestfold", "norway", "museum"]
+        },
+        {
+            "title": "Book Review: \"Project Hail Mary\" by Andy Weir",
+            "content": "Absolutely loved \"Project Hail Mary\"! Andy Weir has done it again with this engaging and witty sci-fi thriller. The characters are fantastic, and the science is surprisingly accessible. A must-read for any sci-fi fan.",
+            "tags": ["books", "review", "sci-fi", "andy weir", "reading"]
+        },
+        {
+            "title": "Simple Tips for Growing Your Own Herbs Indoors",
+            "content": "Fresh herbs can elevate any dish! I've started growing a small herb garden on my windowsill, and it's been surprisingly easy and rewarding. Here are a few simple tips to get you started with your own indoor herb garden.",
+            "tags": ["gardening", "herbs", "diy", "food", "home"]
+        },
+        {
+            "title": "A Day Trip to Jomfruland National Park",
+            "content": "Jomfruland National Park is a true gem! This car-free island offers stunning natural beauty, perfect for hiking and birdwatching. The ferry ride over is also a treat. A fantastic escape from the mainland.",
+            "tags": ["travel", "nature", "hiking", "norway", "national park", "jomfruland"]
+        },
+        {
+            "title": "Supporting Local Craftspeople in the Tønsberg Area",
+            "content": "I recently visited a local craft fair and was so impressed by the talent and artistry on display. Supporting local craftspeople not only gives you unique, handmade items but also strengthens our community. Let's celebrate their work!",
+            "tags": ["local", "crafts", "tønsberg", "community", "shopping"]
+        },
+        {
+            "title": "Quick and Healthy Breakfast Ideas for Busy Mornings",
+            "content": "Mornings can be hectic, but skipping breakfast is never a good idea. Here are a few quick and healthy breakfast ideas that will fuel you up for the day ahead, even when you're short on time.",
+            "tags": ["food", "health", "breakfast", "recipes", "quick meals"]
+        },
+        {
+            "title": "The Architectural History of Tønsberg's Waterfront",
+            "content": "Tønsberg's waterfront has a fascinating architectural history, reflecting different periods and styles. From the Brygga to more modern buildings, each structure tells a story about the town's development. Let's take a closer look at some of its key features.",
+            "tags": ["architecture", "history", "tønsberg", "local", "waterfront"]
+        },
+        {
+            "title": "Exploring the Hiking Trails of Rauland",
+            "content": "Ventured a bit further to Rauland and was rewarded with some breathtaking hiking trails. The mountain scenery was stunning, and the fresh air was invigorating. A perfect destination for outdoor enthusiasts.",
+            "tags": ["hiking", "nature", "mountains", "norway", "rauland", "travel"]
+        },
+        {
+            "title": "My Favorite Norwegian Cookbooks for Culinary Inspiration",
+            "content": "Looking to explore Norwegian cuisine? These are some of my favorite cookbooks that offer a fantastic introduction to traditional dishes and modern interpretations. Get ready to bring the flavors of Norway into your kitchen!",
+            "tags": ["cookbooks", "food", "norwegian", "cuisine", "recipes", "review"]
+        },
+        {
+            "title": "A Guide to Cycling Routes in Vestfold",
+            "content": "Vestfold is a fantastic region to explore by bike. From coastal paths to scenic countryside roads, there are cycling routes for all levels. This guide highlights some of the best options for a two-wheeled adventure.",
+            "tags": ["cycling", "vestfold", "norway", "outdoors", "sport", "guide"]
+        },
+        {
+            "title": "The Importance of Preserving Local History",
+            "content": "Preserving local history is crucial for understanding our roots and connecting with the past. Museums, archives, and historical societies play a vital role in this effort. Let's discuss the importance of supporting these institutions.",
+            "tags": ["history", "local", "preservation", "community", "culture"]
+        },
+        {
+            "title": "Book Review: \"Where the Crawdads Sing\" by Delia Owens",
+            "content": "\"Where the Crawdads Sing\" is a beautifully written novel with a captivating story and vivid descriptions of the natural world. The characters are compelling, and the mystery at its heart keeps you hooked until the very end.",
+            "tags": ["books", "review", "fiction", "nature", "reading"]
+        },
+        {
+            "title": "Tips for Reducing Food Waste at Home",
+            "content": "Food waste is a significant issue, but there are many simple steps we can take at home to minimize it. From meal planning to proper storage, every little effort makes a difference. Let's share our best food-saving tips!",
+            "tags": ["sustainability", "food waste", "home", "tips", "environment"]
+        },
+        {
+            "title": "A Visit to the Haugar Art Museum in Tønsberg",
+            "content": "The Haugar Art Museum is a cultural gem in Tønsberg, showcasing a diverse range of contemporary and historical art. My recent visit was inspiring, and I highly recommend checking out their current exhibitions.",
+            "tags": ["art", "museum", "tønsberg", "culture", "local"]
+        },
+        {
+            "title": "Easy DIY Home Decor Projects to Spruce Up Your Space",
+            "content": "Looking to refresh your home without breaking the bank? DIY home decor projects are a fun and creative way to personalize your space. Here are a few easy ideas to get you started.",
+            "tags": ["diy", "home decor", "crafts", "interior design", "budget"]
+        },
+        {
+            "title": "The Benefits of Spending Time in Nature for Well-being",
+            "content": "Spending time in nature has been proven to have numerous benefits for our physical and mental well-being. Whether it's a walk in the park or a hike in the forest, connecting with the natural world can significantly improve our mood and reduce stress.",
+            "tags": ["nature", "wellness", "health", "outdoors", "mental health"]
+        },
+        {
+            "title": "Exploring the Coastal Path from Stavern to Nevlunghavn",
+            "content": "The coastal path between Stavern and Nevlunghavn offers stunning views of the Skagerrak coastline. It's a beautiful walk with charming harbors and picturesque scenery along the way.",
+            "tags": ["hiking", "coastal", "norway", "stavern", "travel", "nature"]
+        },
+        {
+            "title": "My Journey Learning the Norwegian Language",
+            "content": "Learning a new language can be challenging but also incredibly rewarding. I've been on a journey to learn Norwegian, and while there have been ups and downs, I'm enjoying the process of connecting with the local culture on a deeper level. Any fellow language learners out there?",
+            "tags": ["language", "learning", "norwegian", "culture", "personal"]
+        },
+        {
+            "title": "The Best Picnic Spots in the Tønsberg Area",
+            "content": "With the weather getting warmer, it's the perfect time for a picnic! Tønsberg and its surroundings offer plenty of beautiful spots to enjoy a meal outdoors. Here are a few of my favorite picnic locations.",
+            "tags": ["picnic", "tønsberg", "outdoors", "summer", "local", "food"]
+        },
+        {
+            "title": "Supporting Local Farmers Markets in Vestfold",
+            "content": "Farmers markets are a fantastic way to access fresh, seasonal produce and support local farmers. Vestfold has some great markets offering a variety of goods. Let's celebrate the bounty of our region!",
+            "tags": ["farmers market", "local", "food", "vestfold", "support local", "community"]
+        },
+        {
+            "title": "A Guide to Birdwatching in Vestfold's Wetlands",
+            "content": "Vestfold's wetlands are a haven for birdlife. Birdwatching can be a relaxing and rewarding hobby, and there are several excellent spots in the region to observe various species.",
+            "tags": ["birdwatching", "nature", "vestfold", "wetlands", "hobby", "wildlife"]
+        },
+        {
+            "title": "Reflecting on the Beauty of the Changing Seasons in Norway",
+            "content": "Norway's distinct seasons each offer their own unique beauty, from the vibrant greens of summer to the snowy landscapes of winter. Taking the time to appreciate these changes can bring a sense of wonder and connection to nature.",
+            "tags": ["seasons", "norway", "nature", "reflection", "beauty"]
+        }
+    ]
+
+    # Ensures it don't try to seed more posts than it  have static data for
+    # Also respect the --posts option if it's less than the total available
+    num_posts_to_seed = min(posts, len(static_posts))
+    if posts > len(static_posts):
+        click.echo(f"Warning: Requested {posts} posts, but only {len(static_posts)} static posts are available. Seeding {len(static_posts)}.")
+
+    click.echo(f'Seeding database with {num_posts_to_seed} posts from static data...')
 
     try:
-        for i in range(posts):
-            # Generate fake post data
-            title = fake.sentence(nb_words=6).capitalize()
-            # Generate 1 to 4 paragraphs for content
-            content_paragraphs = fake.paragraphs(nb=fake.random_int(min=1, max=4))
-            content = "\n\n".join(content_paragraphs)
-            # Generate 1 to 5 unique tags
-            tag_names = fake.words(nb=fake.random_int(min=1, max=5), unique=True)
+        # Loop through the static data up to the determined limit
+        for post_data in static_posts[:num_posts_to_seed]:
+            title = post_data["title"]
+            content = post_data["content"]
+            # Use the defined tags, default to empty list if missing
+            tag_names = post_data.get("tags", [])
 
             # Add the post to the database
             post_id = db.add_post(title, content)
@@ -60,6 +192,11 @@ def seed_db_command(posts):
             if post_id:
                 click.echo(f"  Added post '{title}' (ID: {post_id})")
                 # Add tags and link them to the post
+                if not tag_names:
+                    # Optional: Add random tags if none are defined statically
+                    # tag_names = fake.words(nb=fake.random_int(min=1, max=3), unique=True)
+                    click.echo(f"    - No static tags defined for this post.")
+
                 for tag_name in tag_names:
                     tag_id = db.add_or_get_tag(tag_name)
                     if tag_id:
@@ -84,32 +221,42 @@ def seed_db_command(posts):
 # --- Routes ---
 @app.route('/')
 def index():
-    """Renders the homepage, listing all blog posts."""
+    """Renders the homepage, listing all blog posts with their tags."""
     try:
-        # Fetch all posts from the database using our db module function
-        posts = db.get_all_posts() # Defaults to newest first
+        posts_raw = db.get_all_posts() # Get basic post data
+        posts_with_tags = []
+        for post in posts_raw:
+            # Fetch tags for the current post
+            tags = db.get_tags_for_post(post['id'])
+            # Convert the sqlite3.Row post object to a dictionary
+            post_dict = dict(post)
+            # Add the list of tag objects (also sqlite3.Row) to the dictionary
+            post_dict['tags'] = tags
+            posts_with_tags.append(post_dict)
 
-        # Render an HTML template, passing the posts data to it
-        return render_template('index.html', posts=posts)
+        # Pass the list of post dictionaries (each containing its tags) to the template
+        return render_template('index.html', posts=posts_with_tags)
     except Exception as e:
         # Basic error handling for the route
-        app.logger.error(f"Error fetching posts for index page: {e}")
+        app.logger.error(f"Error fetching posts/tags for index page: {e}")
         # You might want a proper error page later
         return "<h1>An error occurred fetching posts.</h1>", 500
-    
+
 
 @app.route('/post/<int:post_id>')
 def post(post_id):
-    """Shows a single blog post identified by post_id."""
-    # Remove the try block
-    post = db.get_post_by_id(post_id)
-    if post is None:
+    """Shows a single blog post identified by post_id, including tags."""
+    post_data = db.get_post_by_id(post_id)
+    if post_data is None:
         # If get_post_by_id returns None, the post wasn't found
         abort(404) # Let Flask handle this exception
 
-    # TODO: Fetch comments and tags for this post later
+    # Fetch the tags specifically for this post
+    tags_data = db.get_tags_for_post(post_id)
+    # TODO: Fetch comments for this post later
 
-    return render_template('post.html', post=post)
+    # Pass both the post data and the tags data to the template
+    return render_template('post.html', post=post_data, tags=tags_data)
 
 # --- Add more routes and logic below ---
 # We'll add the route for individual posts next
