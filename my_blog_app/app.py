@@ -217,7 +217,6 @@ def seed_db_command(posts):
         click.echo(f'Error during database seeding: {e}', err=True)
 
 
-
 # --- Routes ---
 @app.route('/')
 def index():
@@ -297,6 +296,111 @@ def posts_by_tag(tag_name):
         app.logger.error(f"Error fetching posts for tag '{tag_name}': {e}")
         # You might want a proper error page later
         return "<h1>An error occurred fetching posts for this tag.</h1>", 500
+    
+
+
+
+def process_tags(tags_string):
+    """Helper function to process a comma-separated tag string."""
+    if not tags_string:
+        return []
+    # Split by comma, strip whitespace from each tag, filter out empty strings
+    tags = [tag.strip() for tag in tags_string.split(',') if tag.strip()]
+    return tags
+
+@app.route('/post/new', methods=('GET', 'POST'))
+def create_post():
+    """Handles creation of a new blog post."""
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        tags_string = request.form.get('tags', '') # Default to empty string
+
+        if not title or not content:
+            flash('Title and Content are required!', 'error')
+            # Re-render form with entered data if validation fails
+            return render_template('create_edit_post.html',
+                                   post={'title': title, 'content': content, 'tags_string': tags_string})
+        else:
+            post_id = db.add_post(title, content)
+            if post_id:
+                # Process and link tags
+                tag_names = process_tags(tags_string)
+                for tag_name in tag_names:
+                    tag_id = db.add_or_get_tag(tag_name)
+                    if tag_id:
+                        db.link_post_tag(post_id, tag_id)
+                    else:
+                        flash(f"Failed to add or find tag '{tag_name}'.", 'warning')
+
+                flash('Post created successfully!', 'success')
+                return redirect(url_for('post', post_id=post_id))
+            else:
+                flash('Failed to create post.', 'error')
+                # Re-render form with entered data
+                return render_template('create_edit_post.html',
+                                       post={'title': title, 'content': content, 'tags_string': tags_string})
+
+    # --- Handle GET request ---
+    # Render the empty form for creating a new post
+    return render_template('create_edit_post.html')
+
+
+@app.route('/post/<int:post_id>/edit', methods=('GET', 'POST'))
+def edit_post(post_id):
+    """Handles editing of an existing blog post."""
+    # Fetch the existing post (needed for both GET and POST)
+    post_data = db.get_post_by_id(post_id)
+    if post_data is None:
+        abort(404)
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        tags_string = request.form.get('tags', '')
+
+        if not title or not content:
+            flash('Title and Content are required!', 'error')
+            # Re-render form with existing post_id and entered data
+            # Need to reconstruct the 'post' dict for the template
+            current_tags = db.get_tags_for_post(post_id)
+            tags_string_orig = ', '.join([t['name'] for t in current_tags])
+            post_for_template = {'id': post_id, 'title': title, 'content': content, 'tags_string': tags_string or tags_string_orig}
+            return render_template('create_edit_post.html', post=post_for_template)
+        else:
+            updated = db.update_post(post_id, title, content)
+            if updated:
+                # Update tags: remove old, add new
+                db.unlink_all_tags_for_post(post_id) # Remove existing links
+                tag_names = process_tags(tags_string)
+                for tag_name in tag_names:
+                    tag_id = db.add_or_get_tag(tag_name)
+                    if tag_id:
+                        db.link_post_tag(post_id, tag_id)
+                    else:
+                        flash(f"Failed to add or find tag '{tag_name}'.", 'warning')
+
+                flash('Post updated successfully!', 'success')
+                return redirect(url_for('post', post_id=post_id))
+            else:
+                # This might happen if the post was deleted between GET and POST, unlikely
+                flash('Failed to update post.', 'error')
+                # Re-render form with existing post_id and entered data
+                current_tags = db.get_tags_for_post(post_id)
+                tags_string_orig = ', '.join([t['name'] for t in current_tags])
+                post_for_template = {'id': post_id, 'title': title, 'content': content, 'tags_string': tags_string or tags_string_orig}
+                return render_template('create_edit_post.html', post=post_for_template)
+
+    # --- Handle GET request ---
+    # Fetch current tags and format them as a string for the input field
+    current_tags = db.get_tags_for_post(post_id)
+    tags_string = ', '.join([tag['name'] for tag in current_tags])
+
+    # Convert Row to dict and add tags_string for template consistency
+    post_for_template = dict(post_data)
+    post_for_template['tags_string'] = tags_string
+
+    return render_template('create_edit_post.html', post=post_for_template)
 
 # --- Add more routes and logic below ---
 # We'll add the route for individual posts next
@@ -305,4 +409,4 @@ def posts_by_tag(tag_name):
 # --- Run the development server ---
 if __name__ == '__main__':
     print("--- Attempting to run Flask app ---")
-    app.run(debug=True, port=5001) # Using port 5001 as decided earlier
+    app.run(debug=True, port=5001) 
