@@ -276,4 +276,38 @@ def get_tags_for_post(post_id):
             conn.close()
     return tags
 
+def get_posts_by_tag(tag_name):
+    """Retrieves all posts associated with a specific tag name.
+
+    Args:
+        tag_name (str): The name of the tag.
+
+    Returns:
+        list[sqlite3.Row]: A list of post objects (dictionary-like Rows)
+                           associated with the tag, ordered by newest first.
+                           Returns an empty list if the tag doesn't exist,
+                           has no posts, or an error occurs.
+    """
+    posts = []
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Join posts, post_tags, and tags tables. Filter by tag name.
+        cursor.execute("""
+            SELECT p.id, p.title, p.content, p.published_date
+            FROM posts p
+            JOIN post_tags pt ON p.id = pt.post_id
+            JOIN tags t ON pt.tag_id = t.id
+            WHERE t.name = ?
+            ORDER BY p.published_date DESC
+        """, (tag_name,))
+        posts = cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"Database error in get_posts_by_tag for tag '{tag_name}': {e}")
+    finally:
+        if conn:
+            conn.close()
+    return posts
+
 # --- We will add functions for comments, updating posts later ---

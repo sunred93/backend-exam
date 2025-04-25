@@ -258,10 +258,27 @@ def post(post_id):
     # Pass both the post data and the tags data to the template
     return render_template('post.html', post=post_data, tags=tags_data)
 
+
+@app.route('/tag/<string:tag_name>')
+def posts_by_tag(tag_name):
+    """Shows all posts associated with a specific tag."""
+    try:
+        # Fetch posts using the new db function
+        posts = db.get_posts_by_tag(tag_name)
+
+        # We might want to fetch tags for these posts too for consistency,
+        # similar to the index page, but let's keep it simple for now.
+        # We'll pass the tag_name itself to the template.
+
+        # Render a new template, passing the tag name and the list of posts
+        return render_template('tag_posts.html', tag_name=tag_name, posts=posts)
+    except Exception as e:
+        app.logger.error(f"Error fetching posts for tag '{tag_name}': {e}")
+        # You might want a proper error page later
+        return "<h1>An error occurred fetching posts for this tag.</h1>", 500
+
 # --- Add more routes and logic below ---
 # We'll add the route for individual posts next
-
-
 
 
 # --- Run the development server ---

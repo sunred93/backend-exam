@@ -1,11 +1,10 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Blog</title>
-    <!-- You can link CSS files here later -->
+    <title>Posts tagged "{{ tag_name }}" - My Blog</title>
+    <!-- Link to the same basic styles as index.html -->
     <style>
       body {
         font-family: sans-serif;
@@ -26,57 +25,51 @@
       .post-excerpt {
         margin-top: 0.5em;
       }
-      /* Basic styling for tags later */
-      .tags span {
+      .tags span,
+      .tags a {
         background-color: #f0f0f0;
         padding: 2px 6px;
         border-radius: 3px;
         margin-right: 5px;
         font-size: 0.8em;
+        text-decoration: none;
+        color: #333;
+      }
+      .tags a:hover {
+        background-color: #ddd;
       }
     </style>
   </head>
   <body>
-    <h1>All Blog Posts</h1>
-    <a href="#">Create New Blog Post</a>
-    <!-- Link placeholder -->
+    <nav>
+      <a href="{{ url_for('index') }}">&laquo; Back to Home</a>
+    </nav>
+
+    <h1>Posts tagged with "{{ tag_name }}"</h1>
     <hr />
 
     {% if posts %} {% for post in posts %}
     <article>
+      {# Use same structure as index.html for consistency #}
       <h2>
         <a href="{{ url_for('post', post_id=post['id']) }}"
           >{{ post['title'] }}</a
         >
       </h2>
-      <!-- Link placeholder -->
       <div class="post-meta">
-        Published on: {{ post['published_date'] }}
-        <!-- Tags will go here later -->
-        {% if post['tags'] %}
-        <div class="tags">
-          Tags: {% for tag in post['tags'] %}
-          <span
-            ><a href="{{ url_for('posts_by_tag', tag_name=tag['name']) }}"
-              >{{ tag['name'] }}</a
-            ></span
-          >
-          {# Check this line #} {% endfor %}
-        </div>
-        {% endif %}
+        Published on: {{ post['published_date'] }} {# We could fetch and display
+        tags here too if needed #}
       </div>
       <div class="post-excerpt">
-        <!-- Display first 150 characters as excerpt -->
         <p>
           {{ post['content'][:150] }}{% if post['content']|length > 150 %}...{%
           endif %}
         </p>
       </div>
       <a href="{{ url_for('post', post_id=post['id']) }}">Read More</a>
-      <!-- Link placeholder -->
     </article>
     {% endfor %} {% else %}
-    <p>No posts found yet!</p>
+    <p>No posts found for the tag "{{ tag_name }}".</p>
     {% endif %}
   </body>
 </html>
