@@ -204,6 +204,43 @@ def add_or_get_tag(tag_name):
     return tag_id
 
 
+def update_post(post_id, title, content):
+    """Updates the title and content of an existing post.
+
+    Args:
+        post_id (int): The ID of the post to update.
+        title (str): The new title for the post.
+        content (str): The new content for the post.
+
+    Returns:
+        bool: True if the update was successful (at least one row affected),
+              False otherwise (e.g., post_id not found or error occurred).
+    """
+    conn = None
+    success = False
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Use parameterized query for the UPDATE statement
+        cursor.execute("""
+            UPDATE posts
+            SET title = ?, content = ?
+            WHERE id = ?
+        """, (title, content, post_id))
+        conn.commit()
+        # Check if any row was actually updated
+        # cursor.rowcount will be 1 if the update was successful, 0 if id wasn't found
+        if cursor.rowcount > 0:
+            success = True
+    except sqlite3.Error as e:
+        print(f"Database error in update_post for post {post_id}: {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+    return success
+
 def link_post_tag(post_id, tag_id):
     """Creates an association between a post and a tag in the post_tags table.
 
@@ -372,4 +409,34 @@ def add_comment(post_id, author, content):
         if conn:
             conn.close()
     return last_id
+
+
+def unlink_all_tags_for_post(post_id):
+    """Removes all tag associations for a specific post from post_tags.
+
+    Args:
+        post_id (int): The ID of the post whose tag links should be removed.
+
+    Returns:
+        bool: True if the deletion was successful or if no links existed,
+              False if an error occurred.
+    """
+    conn = None
+    success = False
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Use parameterized query for the DELETE statement
+        cursor.execute("DELETE FROM post_tags WHERE post_id = ?", (post_id,))
+        conn.commit()
+        # rowcount will be >= 0. Consider successful if no error.
+        success = True
+    except sqlite3.Error as e:
+        print(f"Database error in unlink_all_tags_for_post for post {post_id}: {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+    return success
 # --- We will add functions for comments, updating posts later ---

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Dynamically set title based on whether 'post' exists -->
+    <title>
+      {% if post %}Edit Post{% else %}Create New Post{% endif %} - My Blog
+    </title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.5em;
+        font-weight: bold;
+      }
+      input[type="text"],
+      textarea {
+        width: 100%;
+        max-width: 600px;
+        padding: 8px;
+        margin-bottom: 1em;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 200px;
+      }
+      .form-actions button {
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .form-actions button:hover {
+        background-color: #0056b3;
+      }
+      .form-actions a {
+        margin-left: 10px;
+        color: #666;
+        text-decoration: none;
+      }
+      .form-actions a:hover {
+        text-decoration: underline;
+      }
+      /* Basic styles for flash messages */
+      .flash {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+      .flash.success {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+      }
+      .flash.error {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+      }
+      .flash.warning {
+        color: #8a6d3b;
+        background-color: #fcf8e3;
+        border-color: #faebcc;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <!-- Link back to index or the post being edited -->
+      {% if post %}
+      <a href="{{ url_for('post', post_id=post['id']) }}"
+        >&laquo; Back to Post</a
+      >
+      | {% endif %}
+      <a href="{{ url_for('index') }}">Back to Home</a>
+    </nav>
+
+    <h1>{% if post %}Edit Post{% else %}Create New Post{% endif %}</h1>
+
+    <!-- Display Flashed Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div>
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <!-- Form action points to the current URL (handles both create/edit) -->
+    <form method="post">
+      <div>
+        <label for="title">Title:</label>
+        <!-- Pre-fill value if editing, otherwise use empty string -->
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value="{{ post['title'] if post else '' }}"
+          required
+        />
+      </div>
+      <div>
+        <label for="content">Content:</label>
+        <!-- Pre-fill textarea content if editing -->
+        <textarea id="content" name="content" required>
+{{ post['content'] if post else '' }}</textarea
+        >
+      </div>
+      <div>
+        <label for="tags">Tags (comma-separated):</label>
+        <!-- Pre-fill tags if editing -->
+        <input
+          type="text"
+          id="tags"
+          name="tags"
+          value="{{ post['tags_string'] if post else '' }}"
+        />
+      </div>
+      <div class="form-actions">
+        <button type="submit">
+          {% if post %}Update Post{% else %}Create Post{% endif %}
+        </button>
+        {% if post %}
+        <a href="{{ url_for('post', post_id=post['id']) }}">Cancel</a>
+        {% else %}
+        <a href="{{ url_for('index') }}">Cancel</a>
+        {% endif %}
+      </div>
+    </form>
+  </body>
+</html>

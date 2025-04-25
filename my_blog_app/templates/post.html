@@ -95,8 +95,7 @@
           {# Check this line #} {% endfor %}
         </div>
         {% endif %}
-        <!-- Edit link placeholder -->
-        | <a href="#">Edit Post</a>
+         <a href="{{ url_for('edit_post', post_id=post['id']) }}">Edit Post</a>
       </div>
       <div class="post-content">
         <!-- Use nl2br filter later if needed, or handle paragraphs -->
