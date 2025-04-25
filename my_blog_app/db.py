@@ -117,3 +117,131 @@ def get_post_by_id(post_id):
         if conn:
             conn.close()
     return post
+
+
+
+def add_post(title, content):
+    """Adds a new post to the database.
+
+    Args:
+        title (str): The title of the post.
+        content (str): The body content of the post.
+
+    Returns:
+        int | None: The ID of the newly inserted post if successful,
+                    otherwise None.
+    """
+    conn = None
+    last_id = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Use parameterized query
+        cursor.execute("INSERT INTO posts (title, content) VALUES (?, ?)",
+                       (title, content))
+        conn.commit() # Commit the transaction
+        last_id = cursor.lastrowid # Get the ID of the row just inserted
+    except sqlite3.Error as e:
+        print(f"Database error in add_post: {e}")
+        if conn:
+            conn.rollback() # Rollback changes if error occurs
+    finally:
+        if conn:
+            conn.close()
+    return last_id
+
+def add_or_get_tag(tag_name):
+    """Adds a new tag if it doesn't exist, or gets the ID of an existing tag.
+
+    Args:
+        tag_name (str): The name of the tag.
+
+    Returns:
+        int | None: The ID of the tag (either newly created or existing)
+                    if successful, otherwise None.
+    """
+    conn = None
+    tag_id = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # First, try to find the tag
+        cursor.execute("SELECT id FROM tags WHERE name = ?", (tag_name,))
+        result = cursor.fetchone()
+
+        if result:
+            tag_id = result['id']
+        else:
+            # If not found, insert the new tag
+            cursor.execute("INSERT INTO tags (name) VALUES (?)", (tag_name,))
+            conn.commit() # Commit the insert
+            tag_id = cursor.lastrowid # Get the ID of the new tag
+
+    except sqlite3.IntegrityError:
+        # Handle potential race condition if another process inserted the tag
+        # between our SELECT and INSERT (less likely with SQLite's default locking)
+        # Re-query to get the ID of the now existing tag
+        if conn: # Ensure connection exists before re-querying
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM tags WHERE name = ?", (tag_name,))
+            result = cursor.fetchone()
+            if result:
+                tag_id = result['id']
+            else:
+                 print(f"Database error: Failed to insert or find tag '{tag_name}' after IntegrityError.")
+                 conn.rollback() # Rollback if we still can't find it
+        else:
+             print(f"Database error: Connection lost during tag handling for '{tag_name}'.")
+
+    except sqlite3.Error as e:
+        print(f"Database error in add_or_get_tag for '{tag_name}': {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+    return tag_id
+
+
+def link_post_tag(post_id, tag_id):
+    """Creates an association between a post and a tag in the post_tags table.
+
+    Args:
+        post_id (int): The ID of the post.
+        tag_id (int): The ID of the tag.
+
+    Returns:
+        bool: True if the link was created successfully, False otherwise.
+    """
+    conn = None
+    success = False
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Use parameterized query
+        cursor.execute("INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)",
+                       (post_id, tag_id))
+        conn.commit()
+        success = True
+    except sqlite3.IntegrityError:
+        # This likely means the link already exists (due to PRIMARY KEY constraint)
+        # Or one of the foreign keys doesn't exist (shouldn't happen if IDs are valid)
+        # We can often silently ignore this if duplicates are okay or expected.
+        print(f"Info: Link between post {post_id} and tag {tag_id} likely already exists.")
+        # Check if the link actually exists now
+        cursor.execute("SELECT 1 FROM post_tags WHERE post_id = ? AND tag_id = ?", (post_id, tag_id))
+        if cursor.fetchone():
+            success = True # It exists, so consider it a success in this context
+        else:
+            if conn: conn.rollback() # Rollback if it doesn't exist after IntegrityError
+    except sqlite3.Error as e:
+        print(f"Database error in link_post_tag ({post_id}, {tag_id}): {e}")
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
+    return success
+
+# --- We will add functions for comments, updating posts later ---

@@ -1,0 +1,70 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Blog</title>
+    <!-- You can link CSS files here later -->
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2em;
+      }
+      article {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1em;
+        margin-bottom: 1em;
+      }
+      h2 {
+        margin-bottom: 0.2em;
+      }
+      .post-meta {
+        color: #666;
+        font-size: 0.9em;
+      }
+      .post-excerpt {
+        margin-top: 0.5em;
+      }
+      /* Basic styling for tags later */
+      .tags span {
+        background-color: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-right: 5px;
+        font-size: 0.8em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Blog Posts</h1>
+    <a href="#">Create New Blog Post</a>
+    <!-- Link placeholder -->
+    <hr />
+
+    {% if posts %} {% for post in posts %}
+    <article>
+      <h2><a href="#">{{ post['title'] }}</a></h2>
+      <!-- Link placeholder -->
+      <div class="post-meta">
+        Published on: {{ post['published_date'] }}
+        <!-- Tags will go here later -->
+        <div class="tags">
+          <!-- Example: <span>tag1</span> <span>tag2</span> -->
+        </div>
+      </div>
+      <div class="post-excerpt">
+        <!-- Display first 150 characters as excerpt -->
+        <p>
+          {{ post['content'][:150] }}{% if post['content']|length > 150 %}...{%
+          endif %}
+        </p>
+      </div>
+      <a href="#">Read More</a>
+      <!-- Link placeholder -->
+    </article>
+    {% endfor %} {% else %}
+    <p>No posts found yet!</p>
+    {% endif %}
+  </body>
+</html>
