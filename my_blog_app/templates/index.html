@@ -53,9 +53,12 @@
       <div class="post-meta">
         Published on: {{ post['published_date'] }}
         <!-- Tags will go here later -->
+        {% if post['tags'] %}
         <div class="tags">
-          <!-- Example: <span>tag1</span> <span>tag2</span> -->
+          Tags: {% for tag in post['tags'] %}
+          <span>{{ tag['name'] }}</span> {# Check this line #} {% endfor %}
         </div>
+        {% endif %}
       </div>
       <div class="post-excerpt">
         <!-- Display first 150 characters as excerpt -->

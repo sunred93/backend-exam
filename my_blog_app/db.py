@@ -244,4 +244,36 @@ def link_post_tag(post_id, tag_id):
             conn.close()
     return success
 
+def get_tags_for_post(post_id):
+    """Retrieves all tags associated with a specific post.
+
+    Args:
+        post_id (int): The ID of the post.
+
+    Returns:
+        list[sqlite3.Row]: A list of tag objects (dictionary-like Rows),
+                           each containing 'id' and 'name'. Returns an empty
+                           list if no tags are found or an error occurs.
+    """
+    tags = []
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Join posts, post_tags, and tags tables to get tag names for a post_id
+        cursor.execute("""
+            SELECT t.id, t.name
+            FROM tags t
+            JOIN post_tags pt ON t.id = pt.tag_id
+            WHERE pt.post_id = ?
+            ORDER BY t.name
+        """, (post_id,))
+        tags = cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"Database error in get_tags_for_post for post {post_id}: {e}")
+    finally:
+        if conn:
+            conn.close()
+    return tags
+
 # --- We will add functions for comments, updating posts later ---
