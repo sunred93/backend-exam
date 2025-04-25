@@ -4,41 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Posts tagged "{{ tag_name }}" - My Blog</title>
-    <!-- Link to the same basic styles as index.html -->
-    <style>
-      body {
-        font-family: sans-serif;
-        margin: 2em;
-      }
-      article {
-        border-bottom: 1px solid #eee;
-        padding-bottom: 1em;
-        margin-bottom: 1em;
-      }
-      h2 {
-        margin-bottom: 0.2em;
-      }
-      .post-meta {
-        color: #666;
-        font-size: 0.9em;
-      }
-      .post-excerpt {
-        margin-top: 0.5em;
-      }
-      .tags span,
-      .tags a {
-        background-color: #f0f0f0;
-        padding: 2px 6px;
-        border-radius: 3px;
-        margin-right: 5px;
-        font-size: 0.8em;
-        text-decoration: none;
-        color: #333;
-      }
-      .tags a:hover {
-        background-color: #ddd;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <nav>
