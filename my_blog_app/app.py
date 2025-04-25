@@ -1,11 +1,11 @@
 # app.py
 
 import os
-import sqlite3 # Import sqlite3 to catch its specific errors if needed
-import click   # Import click for CLI commands
+# Remove sqlite3 import if not used directly here
+import click
 from flask import Flask, render_template, abort, request, redirect, url_for, flash
 from dotenv import load_dotenv
-import db     
+import db
 from faker import Faker
 
 # Load environment variables from .env file
@@ -17,26 +17,22 @@ app = Flask(__name__)
 # Load configuration from environment variables
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_default_secret_key_for_dev')
 # Add the database path to the config for potential future use (optional)
-app.config['DATABASE'] = db.DATABASE_PATH
+# This now uses the default path from db.py
+app.config['DATABASE'] = db.DEFAULT_DATABASE_PATH
+
+
+# --- Register DB functions with the App ---
+db.init_app(app) # Registers close_db and the init-db command
 
 
 # --- Database Initialization Command ---
-@app.cli.command('init-db')
-@click.command(help='Initialize the database by creating tables from schema.sql.')
-def init_db_command():
-    """Clear existing data and create new tables."""
-    try:
-        db.init_db(app) # Call the init_db function from your db module
-        click.echo('Initialized the database.') # Use click.echo for CLI output
-    except Exception as e:
-        # Catch potential errors during initialization
-        click.echo(f'Error initializing database: {e}', err=True)
-
+# The old @app.cli.command('init-db') definition is REMOVED from here.
+# It's now registered via db.init_app(app)
 
 
 # --- Database Seeding Command ---
 @app.cli.command('seed-db')
-@click.option('--posts', default=25, help='Number of posts to create (max based on static data).') # Default to max available
+@click.option('--posts', default=25, help='Number of posts to create (max based on static data).')
 def seed_db_command(posts):
     """Seeds the database with sample blog posts and tags from static data."""
     fake = Faker() # Keep for potential random tags if needed
@@ -170,7 +166,7 @@ def seed_db_command(posts):
         }
     ]
 
-    # Ensures it don't try to seed more posts than it  have static data for
+    # Ensure we don't try to seed more posts than we have static data for
     # Also respect the --posts option if it's less than the total available
     num_posts_to_seed = min(posts, len(static_posts))
     if posts > len(static_posts):
@@ -187,14 +183,13 @@ def seed_db_command(posts):
             tag_names = post_data.get("tags", [])
 
             # Add the post to the database
+            # Functions in db module now use the app context connection
             post_id = db.add_post(title, content)
 
             if post_id:
                 click.echo(f"  Added post '{title}' (ID: {post_id})")
                 # Add tags and link them to the post
                 if not tag_names:
-                    # Optional: Add random tags if none are defined statically
-                    # tag_names = fake.words(nb=fake.random_int(min=1, max=3), unique=True)
                     click.echo(f"    - No static tags defined for this post.")
 
                 for tag_name in tag_names:
@@ -285,21 +280,13 @@ def posts_by_tag(tag_name):
     try:
         # Fetch posts using the new db function
         posts = db.get_posts_by_tag(tag_name)
-
-        # We might want to fetch tags for these posts too for consistency,
-        # similar to the index page, but let's keep it simple for now.
-        # We'll pass the tag_name itself to the template.
-
-        # Render a new template, passing the tag name and the list of posts
         return render_template('tag_posts.html', tag_name=tag_name, posts=posts)
     except Exception as e:
         app.logger.error(f"Error fetching posts for tag '{tag_name}': {e}")
-        # You might want a proper error page later
         return "<h1>An error occurred fetching posts for this tag.</h1>", 500
-    
 
 
-
+# --- Helper Functions ---
 def process_tags(tags_string):
     """Helper function to process a comma-separated tag string."""
     if not tags_string:
@@ -318,13 +305,11 @@ def create_post():
 
         if not title or not content:
             flash('Title and Content are required!', 'error')
-            # Re-render form with entered data if validation fails
             return render_template('create_edit_post.html',
                                    post={'title': title, 'content': content, 'tags_string': tags_string})
         else:
             post_id = db.add_post(title, content)
             if post_id:
-                # Process and link tags
                 tag_names = process_tags(tags_string)
                 for tag_name in tag_names:
                     tag_id = db.add_or_get_tag(tag_name)
@@ -337,19 +322,16 @@ def create_post():
                 return redirect(url_for('post', post_id=post_id))
             else:
                 flash('Failed to create post.', 'error')
-                # Re-render form with entered data
                 return render_template('create_edit_post.html',
                                        post={'title': title, 'content': content, 'tags_string': tags_string})
 
     # --- Handle GET request ---
-    # Render the empty form for creating a new post
     return render_template('create_edit_post.html')
 
 
 @app.route('/post/<int:post_id>/edit', methods=('GET', 'POST'))
 def edit_post(post_id):
     """Handles editing of an existing blog post."""
-    # Fetch the existing post (needed for both GET and POST)
     post_data = db.get_post_by_id(post_id)
     if post_data is None:
         abort(404)
@@ -361,8 +343,6 @@ def edit_post(post_id):
 
         if not title or not content:
             flash('Title and Content are required!', 'error')
-            # Re-render form with existing post_id and entered data
-            # Need to reconstruct the 'post' dict for the template
             current_tags = db.get_tags_for_post(post_id)
             tags_string_orig = ', '.join([t['name'] for t in current_tags])
             post_for_template = {'id': post_id, 'title': title, 'content': content, 'tags_string': tags_string or tags_string_orig}
@@ -370,8 +350,7 @@ def edit_post(post_id):
         else:
             updated = db.update_post(post_id, title, content)
             if updated:
-                # Update tags: remove old, add new
-                db.unlink_all_tags_for_post(post_id) # Remove existing links
+                db.unlink_all_tags_for_post(post_id)
                 tag_names = process_tags(tags_string)
                 for tag_name in tag_names:
                     tag_id = db.add_or_get_tag(tag_name)
@@ -383,30 +362,21 @@ def edit_post(post_id):
                 flash('Post updated successfully!', 'success')
                 return redirect(url_for('post', post_id=post_id))
             else:
-                # This might happen if the post was deleted between GET and POST, unlikely
                 flash('Failed to update post.', 'error')
-                # Re-render form with existing post_id and entered data
                 current_tags = db.get_tags_for_post(post_id)
                 tags_string_orig = ', '.join([t['name'] for t in current_tags])
                 post_for_template = {'id': post_id, 'title': title, 'content': content, 'tags_string': tags_string or tags_string_orig}
                 return render_template('create_edit_post.html', post=post_for_template)
 
     # --- Handle GET request ---
-    # Fetch current tags and format them as a string for the input field
     current_tags = db.get_tags_for_post(post_id)
     tags_string = ', '.join([tag['name'] for tag in current_tags])
-
-    # Convert Row to dict and add tags_string for template consistency
     post_for_template = dict(post_data)
     post_for_template['tags_string'] = tags_string
-
     return render_template('create_edit_post.html', post=post_for_template)
-
-# --- Add more routes and logic below ---
-# We'll add the route for individual posts next
 
 
 # --- Run the development server ---
 if __name__ == '__main__':
     print("--- Attempting to run Flask app ---")
-    app.run(debug=True, port=5001) 
+    app.run(debug=True, port=5001)
