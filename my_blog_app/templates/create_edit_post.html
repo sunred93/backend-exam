@@ -1,80 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Dynamically set title based on whether 'post' exists -->
-    <title>
-      {% if post %}Edit Post{% else %}Create New Post{% endif %} - My Blog
-    </title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
+{% extends 'base.html' %} {% block title %}{% if post %}Edit Post{% else
+%}Create New Post{% endif %}{% endblock %} {% block content %}
+<h1>{% if post %}Edit Post{% else %}Create New Post{% endif %}</h1>
+
+<!-- IMPORTANT: Add enctype for file uploads -->
+<form
+  method="post"
+  enctype="multipart/form-data"
+  class="needs-validation"
+  novalidate
+>
+  <div class="mb-3">
+    <label for="title" class="form-label">Title</label>
+    <input
+      type="text"
+      class="form-control"
+      id="title"
+      name="title"
+      value="{{ request.form['title'] if request.form else (post.title if post else '') }}"
+      required
     />
-  </head>
-  <body>
-    <nav>
-      <!-- Link back to index or the post being edited -->
-      {% if post %}
-      <a href="{{ url_for('post', post_id=post['id']) }}"
-        >&laquo; Back to Post</a
-      >
-      | {% endif %}
-      <a href="{{ url_for('index') }}">Back to Home</a>
-    </nav>
+    <div class="invalid-feedback">Please provide a title.</div>
+  </div>
 
-    <h1>{% if post %}Edit Post{% else %}Create New Post{% endif %}</h1>
+  <div class="mb-3">
+    <label for="content" class="form-label">Content</label>
+    <textarea
+      class="form-control"
+      id="content"
+      name="content"
+      rows="10"
+      required
+    >
+{{ request.form['content'] if request.form else (post.content if post else '') }}</textarea
+    >
+    <div class="invalid-feedback">Please provide content for the post.</div>
+  </div>
 
-    <!-- Display Flashed Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div>
-      {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+  <div class="mb-3">
+    <label for="tags" class="form-label">Tags (comma-separated)</label>
+    <input
+      type="text"
+      class="form-control"
+      id="tags"
+      name="tags"
+      value="{{ request.form['tags'] if request.form else (post.tags_string if post else '') }}"
+    />
+    <div class="form-text">
+      Enter tags separated by commas, e.g., travel, norway, food
     </div>
-    {% endif %} {% endwith %}
+  </div>
 
-    <!-- Form action points to the current URL (handles both create/edit) -->
-    <form method="post">
-      <div>
-        <label for="title">Title:</label>
-        <!-- Pre-fill value if editing, otherwise use empty string -->
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value="{{ post['title'] if post else '' }}"
-          required
-        />
-      </div>
-      <div>
-        <label for="content">Content:</label>
-        <!-- Pre-fill textarea content if editing -->
-        <textarea id="content" name="content" required>
-{{ post['content'] if post else '' }}</textarea
-        >
-      </div>
-      <div>
-        <label for="tags">Tags (comma-separated):</label>
-        <!-- Pre-fill tags if editing -->
-        <input
-          type="text"
-          id="tags"
-          name="tags"
-          value="{{ post['tags_string'] if post else '' }}"
-        />
-      </div>
-      <div class="form-actions">
-        <button type="submit">
-          {% if post %}Update Post{% else %}Create Post{% endif %}
-        </button>
-        {% if post %}
-        <a href="{{ url_for('post', post_id=post['id']) }}">Cancel</a>
-        {% else %}
-        <a href="{{ url_for('index') }}">Cancel</a>
-        {% endif %}
-      </div>
-    </form>
-  </body>
-</html>
+  <!-- Image Upload Section -->
+  <div class="mb-3">
+    <label for="image" class="form-label">Post Image</label>
+    <input
+      type="file"
+      class="form-control"
+      id="image"
+      name="image"
+      accept="image/png, image/jpeg, image/gif"
+    />
+    {% if post and post.image_filename %}
+    <div class="mt-3">
+      <p class="mb-1"><strong>Current Image:</strong></p>
+      <img
+        src="{{ url_for('static', filename=post.image_filename) }}"
+        alt="Current post image"
+        style="
+          max-width: 200px;
+          height: auto;
+          border: 1px solid #dee2e6;
+          padding: 5px;
+          border-radius: 0.25rem;
+        "
+      />
+      <p class="mt-1">
+        <small>Uploading a new image will replace the current one.</small>
+      </p>
+    </div>
+    {% endif %}
+    <small class="form-text text-muted"
+      >Optional. Allowed types: PNG, JPG, JPEG, GIF.</small
+    >
+  </div>
+  <!-- End Image Upload Section -->
+
+  <button type="submit" class="btn btn-primary mt-3">
+    {% if post %}Update Post{% else %}Create Post{% endif %}
+  </button>
+  <a
+    href="{{ url_for('post', post_id=post.id) if post else url_for('index') }}"
+    class="btn btn-secondary mt-3"
+    >Cancel</a
+  >
+</form>
+
+{% endblock %} {% block scripts %} {# Optional: Add simple Bootstrap validation
+script if desired #}
+<script>
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (function () {
+    "use strict";
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll(".needs-validation");
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener(
+        "submit",
+        function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          form.classList.add("was-validated");
+        },
+        false
+      );
+    });
+  })();
+</script>
+{% endblock %}

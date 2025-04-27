@@ -1,99 +1,106 @@
-<!-- templates/post.html -->
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Use the post title in the page title -->
-    <title>{{ post['title'] }} - My Blog</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
+{% extends 'base.html' %} {% block title %}{{ post.title }}{% endblock %} {%
+block content %}
+<article class="post-full mb-5">
+  <h1>{{ post.title }}</h1>
+  <p class="post-meta text-muted">
+    Published on {{ post.published_date.strftime('%Y-%m-%d') }}
+  </p>
+
+  <!-- Display image if it exists -->
+  {% if post.image_filename %}
+  <div class="post-image-full mb-4 text-center">
+    <img
+      src="{{ url_for('static', filename=post.image_filename) }}"
+      alt="{{ post.title }}"
+      class="img-fluid rounded shadow-sm"
+      style="max-height: 400px"
     />
-  </head>
-  <body>
-    <nav>
-      <a href="{{ url_for('index') }}">&laquo; Back to Home</a>
-    </nav>
-    <!-- Display Flashed Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div>
-      {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Display tags -->
+  {% if tags %}
+  <p class="post-tags mb-3">
+    Tags: {% for tag in tags %}
+    <a
+      href="{{ url_for('posts_by_tag', tag_name=tag.name) }}"
+      class="badge bg-secondary text-decoration-none me-1"
+      >{{ tag.name }}</a
+    >
+    {% endfor %}
+  </p>
+  {% endif %}
+
+  <!-- Post Content -->
+  <div class="post-content mt-4 mb-4">
+    {# Use safe filter ONLY if you trust the source of the content or sanitize
+    it first #} {# Otherwise, just display {{ post.content }} #} {{ post.content
+    | safe }}
+  </div>
+
+  <!-- Edit/Delete Buttons -->
+  <div class="post-actions mt-4 mb-5 border-top pt-3">
+    <a
+      href="{{ url_for('edit_post', post_id=post.id) }}"
+      class="btn btn-secondary me-2"
+      >Edit Post</a
+    >
+    <form
+      action="{{ url_for('delete_post_route', post_id=post.id) }}"
+      method="post"
+      style="display: inline"
+      onsubmit="return confirm('Are you sure you want to delete this post?');"
+    >
+      <button type="submit" class="btn btn-danger">Delete Post</button>
+    </form>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary ms-2"
+      >Back to Home</a
+    >
+  </div>
+</article>
+
+<!-- Comments Section -->
+<section class="comments mt-5">
+  <h2>Comments</h2>
+  {% if comments %} {% for comment in comments %}
+  <div class="comment mb-3 p-3 border rounded bg-light shadow-sm">
+    <p class="mb-1">
+      <strong>{{ comment.author }}</strong>
+      <span class="text-muted small ms-2"
+        >{{ comment.published_date.strftime('%Y-%m-%d %H:%M') }}</span
+      >
+    </p>
+    <p class="mb-0">{{ comment.content }}</p>
+  </div>
+  {% endfor %} {% else %}
+  <p>No comments yet. Be the first!</p>
+  {% endif %}
+
+  <h3 class="mt-4">Leave a Comment</h3>
+  <form method="post">
+    {# Action defaults to current URL, which is correct #}
+    <div class="mb-3">
+      <label for="author" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="author"
+        name="author"
+        required
+      />
     </div>
-    {% endif %} {% endwith %}
+    <div class="mb-3">
+      <label for="content" class="form-label">Comment</label>
+      <textarea
+        class="form-control"
+        id="content"
+        name="content"
+        rows="3"
+        required
+      ></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Comment</button>
+  </form>
+</section>
 
-    <article>
-      <h1>{{ post['title'] }}</h1>
-      <div class="post-meta">
-        Published on: {{ post['published_date'] }} {% if tags %}
-        <div class="tags">
-          Tags: {% for tag in tags %}
-          <span
-            ><a href="{{ url_for('posts_by_tag', tag_name=tag['name']) }}"
-              >{{ tag['name'] }}</a
-            >
-          </span>
-          {# Check this line #} {% endfor %}
-        </div>
-        {% endif %}
-        <a href="{{ url_for('edit_post', post_id=post['id']) }}">Edit Post</a>
-      </div>
-      <div class="post-content">
-        <!-- Use nl2br filter later if needed, or handle paragraphs -->
-        {{ post['content'] }}
-      </div>
-    </article>
-
-    <hr />
-
-    <section class="comments">
-      <h2>Comments</h2>
-
-      <!-- Display Existing Comments -->
-      {% if comments %} {% for comment in comments %}
-      <div class="comment">
-        <div class="comment-meta">
-          <strong>{{ comment['author'] }}</strong> commented on {{
-          comment['published_date'] }}
-        </div>
-        <div class="comment-content">
-          <!-- Use |safe filter carefully if you ever allow HTML,
-                             but generally avoid it for user comments.
-                             Jinja2 auto-escapes by default. -->
-          {{ comment['content'] }}
-        </div>
-      </div>
-      {% endfor %} {% else %}
-      <p>No comments yet. Be the first!</p>
-      {% endif %}
-
-      <hr style="margin: 1em 0" />
-
-      <h3>Add a Comment</h3>
-      <!-- Comment Form -->
-      <!-- Action can be empty (posts to current URL) or explicit -->
-      <form method="post">
-        <div>
-          <label for="author">Name:</label><br />
-          <input type="text" id="author" name="author" required size="40" />
-        </div>
-        <div>
-          <label for="comment_content">Comment:</label><br />
-          <textarea
-            id="comment_content"
-            name="content"
-            rows="4"
-            required
-            cols="60"
-          ></textarea>
-        </div>
-        <div>
-          <button type="submit">Submit Comment</button>
-        </div>
-      </form>
-    </section>
-  </body>
-</html>
+{% endblock %}

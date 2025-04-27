@@ -97,8 +97,12 @@ def get_db():
     if 'db' not in g:
         db_path = current_app.config.get('DATABASE', DEFAULT_DATABASE_PATH)
         try:
-            g.db = sqlite3.connect(db_path)
-            g.db.row_factory = sqlite3.Row
+            # Add detect_types parameter here!
+            g.db = sqlite3.connect(
+                db_path,
+                detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+            )
+            g.db.row_factory = sqlite3.Row # Keep using Row factory
         except sqlite3.Error as e:
             current_app.logger.error(f"Database connection failed for {db_path}: {e}")
             # Optionally raise the error or return None depending on desired handling

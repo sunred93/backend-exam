@@ -1,44 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Posts tagged "{{ tag_name }}" - My Blog</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-  </head>
-  <body>
-    <nav>
-      <a href="{{ url_for('index') }}">&laquo; Back to Home</a>
-    </nav>
+{% extends 'base.html' %}
 
-    <h1>Posts tagged with "{{ tag_name }}"</h1>
-    <hr />
+{% block title %}Posts tagged "{{ tag_name }}"{% endblock %}
 
-    {% if posts %} {% for post in posts %}
-    <article>
-      {# Use same structure as index.html for consistency #}
-      <h2>
-        <a href="{{ url_for('post', post_id=post['id']) }}"
-          >{{ post['title'] }}</a
-        >
-      </h2>
-      <div class="post-meta">
-        Published on: {{ post['published_date'] }} {# We could fetch and display
-        tags here too if needed #}
-      </div>
-      <div class="post-excerpt">
-        <p>
-          {{ post['content'][:150] }}{% if post['content']|length > 150 %}...{%
-          endif %}
-        </p>
-      </div>
-      <a href="{{ url_for('post', post_id=post['id']) }}">Read More</a>
-    </article>
-    {% endfor %} {% else %}
-    <p>No posts found for the tag "{{ tag_name }}".</p>
+{% block content %}
+    <h1 class="mb-4">Posts tagged with <span class="badge bg-primary">{{ tag_name }}</span></h1>
+
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary mb-4">&laquo; Back to All Posts</a>
+
+    {% if posts %}
+        {% for post in posts %}
+        <article class="post-summary mb-4 p-3 border rounded shadow-sm">
+            <div class="row">
+                {% if post.image_filename %}
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <a href="{{ url_for('post', post_id=post.id) }}">
+                        <img src="{{ url_for('static', filename=post.image_filename) }}" alt="{{ post.title }}" class="img-fluid rounded" style="max-height: 150px; object-fit: cover; width: 100%;">
+                    </a>
+                </div>
+                <div class="col-md-9">
+                {% else %}
+                <div class="col-md-12">
+                {% endif %}
+                    <h2><a href="{{ url_for('post', post_id=post.id) }}" class="text-decoration-none">{{ post.title }}</a></h2>
+                    <p class="post-meta text-muted small">
+                        Published on {{ post.published_date.strftime('%Y-%m-%d') }}
+                    </p>
+
+                    {# Tags are implicitly known here, but you could fetch/display them again if needed #}
+
+                    <div class="post-actions mt-2">
+                        <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary me-1">Read More</a>
+                        <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                        <form action="{{ url_for('delete_post_route', post_id=post.id) }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            No posts found with the tag "{{ tag_name }}".
+        </div>
     {% endif %}
-  </body>
-</html>
+{% endblock %}

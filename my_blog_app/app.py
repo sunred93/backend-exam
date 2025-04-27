@@ -3,6 +3,9 @@
 import os
 import sqlite3 # Import sqlite3 to catch its specific errors if needed
 import click   # Import click for CLI commands
+import datetime
+from datetime import timezone
+
 # Make sure request, redirect, url_for, flash are imported
 from flask import Flask, render_template, abort, request, redirect, url_for, flash, current_app
 from dotenv import load_dotenv
@@ -25,6 +28,11 @@ app.config['DATABASE'] = db.DEFAULT_DATABASE_PATH
 # --- Initialize database functions and commands with the app ---
 db.init_app(app)
 
+@app.context_processor
+def inject_now():
+    """Injects the current UTC datetime into the template context."""
+    # Using utcnow() is generally recommended for server-side time
+    return {'now': datetime.datetime.now(timezone.utc)}
 
 # --- Database Seeding Command (Updated for image_filename) ---
 @app.cli.command('seed-db')
