@@ -6,29 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Use the post title in the page title -->
     <title>{{ post['title'] }} - My Blog</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <nav>
       <a href="{{ url_for('index') }}">&laquo; Back to Home</a>
     </nav>
     <!-- Display Flashed Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div>
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div>
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
 
     <article>
       <h1>{{ post['title'] }}</h1>
       <div class="post-meta">
-        Published on: {{ post['published_date'] }}
-        
-        {% if tags %}
+        Published on: {{ post['published_date'] }} {% if tags %}
         <div class="tags">
           Tags: {% for tag in tags %}
           <span
@@ -39,7 +39,7 @@
           {# Check this line #} {% endfor %}
         </div>
         {% endif %}
-         <a href="{{ url_for('edit_post', post_id=post['id']) }}">Edit Post</a>
+        <a href="{{ url_for('edit_post', post_id=post['id']) }}">Edit Post</a>
       </div>
       <div class="post-content">
         <!-- Use nl2br filter later if needed, or handle paragraphs -->
@@ -49,49 +49,50 @@
 
     <hr />
 
-    
     <section class="comments">
-        <h2>Comments</h2>
+      <h2>Comments</h2>
 
-        <!-- Display Existing Comments -->
-        {% if comments %}
-            {% for comment in comments %}
-                <div class="comment">
-                    <div class="comment-meta">
-                        <strong>{{ comment['author'] }}</strong> commented on
-                        {{ comment['published_date'] }}
-                    </div>
-                    <div class="comment-content">
-                        <!-- Use |safe filter carefully if you ever allow HTML,
+      <!-- Display Existing Comments -->
+      {% if comments %} {% for comment in comments %}
+      <div class="comment">
+        <div class="comment-meta">
+          <strong>{{ comment['author'] }}</strong> commented on {{
+          comment['published_date'] }}
+        </div>
+        <div class="comment-content">
+          <!-- Use |safe filter carefully if you ever allow HTML,
                              but generally avoid it for user comments.
                              Jinja2 auto-escapes by default. -->
-                        {{ comment['content'] }}
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No comments yet. Be the first!</p>
-        {% endif %}
+          {{ comment['content'] }}
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p>No comments yet. Be the first!</p>
+      {% endif %}
 
-        <hr style="margin: 1em 0;">
+      <hr style="margin: 1em 0" />
 
-        <h3>Add a Comment</h3>
-        <!-- Comment Form -->
-        <!-- Action can be empty (posts to current URL) or explicit -->
-        <form method="post">
-             <div>
-                 <label for="author">Name:</label><br>
-                 <input type="text" id="author" name="author" required size="40">
-             </div>
-             <div>
-                 <label for="comment_content">Comment:</label><br>
-                 <textarea id="comment_content" name="content" rows="4" required cols="60"></textarea>
-             </div>
-             <div>
-                 <button type="submit">Submit Comment</button>
-             </div>
-        </form>
-    </section>
+      <h3>Add a Comment</h3>
+      <!-- Comment Form -->
+      <!-- Action can be empty (posts to current URL) or explicit -->
+      <form method="post">
+        <div>
+          <label for="author">Name:</label><br />
+          <input type="text" id="author" name="author" required size="40" />
+        </div>
+        <div>
+          <label for="comment_content">Comment:</label><br />
+          <textarea
+            id="comment_content"
+            name="content"
+            rows="4"
+            required
+            cols="60"
+          ></textarea>
+        </div>
+        <div>
+          <button type="submit">Submit Comment</button>
+        </div>
       </form>
     </section>
   </body>

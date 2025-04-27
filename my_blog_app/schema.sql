@@ -1,11 +1,18 @@
 -- schema.sql
 
+-- Ensure previous tables are dropped if they exist
+DROP TABLE if EXISTS comments;
+DROP TABLE if EXISTS post_tags;
+DROP TABLE if EXISTS tags;
+DROP TABLE if EXISTS posts;
+
 -- Table for storing blog posts
 CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique identifier for each post
     title TEXT NOT NULL,                  -- Title of the blog post
     content TEXT NOT NULL,                -- Main body/content of the post
-    published_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP -- When the post was created/published
+    published_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When the post was created/published
+    image_filename TEXt NULL               -- images 
 );
 
 -- Table for storing tags
