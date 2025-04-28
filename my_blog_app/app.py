@@ -48,153 +48,273 @@ def seed_db_command(posts):
     static_posts = [
         {
             "title": "Discovering the Charm of Gamlebyen in Fredrikstad",
-            "content": "Took a delightful day trip to Fredrikstad's Gamlebyen (Old Town) recently. The well-preserved fortifications and charming cobblestone streets were like stepping back in time. Definitely worth a visit if you're in the area!",
+            "content": (
+                "Took a delightful day trip to Fredrikstad's Gamlebyen (Old Town) recently. "
+                "The well-preserved fortifications and charming cobblestone streets were like "
+                "stepping back in time. Definitely worth a visit if you're in the area!"
+            ),
             "tags": ["travel", "history", "fredrikstad", "norway", "gamlebyen"],
-            "image_filename": None
+            "image_filename": "uploads/images/fredrikstad-unsplash.jpg"
         },
         {
             "title": "My First Attempt at Making Norwegian Lefse",
-            "content": "I decided to try my hand at making traditional Norwegian lefse. Let's just say it was an... experience! While the first few attempts were less than perfect, I'm determined to master this delicious flatbread. Any seasoned lefse bakers out there with advice?",
+            "content": (
+                "I decided to try my hand at making traditional Norwegian lefse. Let's just say "
+                "it was an... experience! While the first few attempts were less than perfect, "
+                "I'm determined to master this delicious flatbread. Any seasoned lefse bakers "
+                "out there with advice?"
+            ),
             "tags": ["baking", "food", "norwegian", "lefse", "tradition"],
-            "image_filename": None
+            "image_filename": "uploads/images/lefse-unsplash.jpg"
         },
         {
             "title": "A Guide to the Best Beaches in Vestfold for Summer",
-            "content": "With summer just around the corner, it's time to start thinking about beach days! Vestfold boasts some stunning stretches of coastline. This guide highlights a few of my favorite spots for swimming, sunbathing, and enjoying the sea air.",
+            "content": (
+                "With summer just around the corner, it's time to start thinking about beach days! "
+                "Vestfold boasts some stunning stretches of coastline. This guide highlights a few "
+                "of my favorite spots for swimming, sunbathing, and enjoying the sea air."
+            ),
             "tags": ["summer", "beach", "vestfold", "norway", "travel"],
-            "image_filename": None
+            "image_filename": "uploads/images/vestfoldbeach-unsplash.jpg"
         },
         {
             "title": "Exploring the Viking History of Vestfold County",
-            "content": "Vestfold has a rich Viking heritage, and there are fascinating historical sites scattered throughout the region. I spent some time exploring the Midgard Viking Centre and the Oseberg burial mound, and it truly brought history to life.",
+            "content": (
+                "Vestfold has a rich Viking heritage, and there are fascinating historical sites "
+                "scattered throughout the region. I spent some time exploring the Midgard Viking "
+                "Centre and the Oseberg burial mound, and it truly brought history to life."
+            ),
             "tags": ["history", "viking", "vestfold", "norway", "museum"],
-            "image_filename": None
+            "image_filename": "uploads/images/vikingship-unsplash.jpg"
         },
         {
             "title": "Book Review: \"Project Hail Mary\" by Andy Weir",
-            "content": "Absolutely loved \"Project Hail Mary\"! Andy Weir has done it again with this engaging and witty sci-fi thriller. The characters are fantastic, and the science is surprisingly accessible. A must-read for any sci-fi fan.",
+            "content": (
+                "Absolutely loved \"Project Hail Mary\"! Andy Weir has done it again with this "
+                "engaging and witty sci-fi thriller. The characters are fantastic, and the "
+                "science is surprisingly accessible. A must-read for any sci-fi fan."
+            ),
             "tags": ["books", "review", "sci-fi", "andy weir", "reading"],
-            "image_filename": None
+            "image_filename": "uploads/images/AndyWeir-unsplash.jpg"
         },
         {
             "title": "Simple Tips for Growing Your Own Herbs Indoors",
-            "content": "Fresh herbs can elevate any dish! I've started growing a small herb garden on my windowsill, and it's been surprisingly easy and rewarding. Here are a few simple tips to get you started with your own indoor herb garden.",
+            "content": (
+                "Fresh herbs can elevate any dish! I've started growing a small herb garden on "
+                "my windowsill, and it's been surprisingly easy and rewarding. Here are a few "
+                "simple tips to get you started with your own indoor herb garden."
+            ),
             "tags": ["gardening", "herbs", "diy", "food", "home"],
-            "image_filename": None
+            "image_filename": "uploads/images/herbs-unsplash.jpg"
         },
         {
             "title": "A Day Trip to Jomfruland National Park",
-            "content": "Jomfruland National Park is a true gem! This car-free island offers stunning natural beauty, perfect for hiking and birdwatching. The ferry ride over is also a treat. A fantastic escape from the mainland.",
+            "content": (
+                "Jomfruland National Park is a true gem! This car-free island offers stunning "
+                "natural beauty, perfect for hiking and birdwatching. The ferry ride over is "
+                "also a treat. A fantastic escape from the mainland."
+            ),
             "tags": ["travel", "nature", "hiking", "norway", "national park", "jomfruland"],
-            "image_filename": None
+            "image_filename": "uploads/images/Jomfruland-unsplash.jpg"
         },
         {
             "title": "Supporting Local Craftspeople in the Tønsberg Area",
-            "content": "I recently visited a local craft fair and was so impressed by the talent and artistry on display. Supporting local craftspeople not only gives you unique, handmade items but also strengthens our community. Let's celebrate their work!",
+            "content": (
+                "I recently visited a local craft fair and was so impressed by the talent and "
+                "artistry on display. Supporting local craftspeople not only gives you unique, "
+                "handmade items but also strengthens our community. Let's celebrate their work!"
+            ),
             "tags": ["local", "crafts", "tønsberg", "community", "shopping"],
-            "image_filename": None
+            "image_filename": "uploads/images/localcraft-unsplash.jpg"
         },
         {
             "title": "Quick and Healthy Breakfast Ideas for Busy Mornings",
-            "content": "Mornings can be hectic, but skipping breakfast is never a good idea. Here are a few quick and healthy breakfast ideas that will fuel you up for the day ahead, even when you're short on time.",
+            "content": (
+                "Mornings can be hectic, but skipping breakfast is never a good idea. Here are "
+                "a few quick and healthy breakfast ideas that will fuel you up for the day ahead, "
+                "even when you're short on time."
+            ),
             "tags": ["food", "health", "breakfast", "recipes", "quick meals"],
-            "image_filename": None
+            "image_filename": "uploads/images/breakfast-unsplash.jpg"
         },
         {
             "title": "The Architectural History of Tønsberg's Waterfront",
-            "content": "Tønsberg's waterfront has a fascinating architectural history, reflecting different periods and styles. From the Brygga to more modern buildings, each structure tells a story about the town's development. Let's take a closer look at some of its key features.",
+            "content": (
+                "Tønsberg's waterfront has a fascinating architectural history, reflecting "
+                "different periods and styles. From the Brygga to more modern buildings, each "
+                "structure tells a story about the town's development. Let's take a closer look "
+                "at some of its key features."
+            ),
             "tags": ["architecture", "history", "tønsberg", "local", "waterfront"],
-            "image_filename": None
+            "image_filename": "uploads/images/tonsberg-unsplash.jpg"
         },
         {
             "title": "Exploring the Hiking Trails of Rauland",
-            "content": "Ventured a bit further to Rauland and was rewarded with some breathtaking hiking trails. The mountain scenery was stunning, and the fresh air was invigorating. A perfect destination for outdoor enthusiasts.",
+            "content": (
+                "Ventured a bit further to Rauland and was rewarded with some breathtaking hiking "
+                "trails. The mountain scenery was stunning, and the fresh air was invigorating. "
+                "A perfect destination for outdoor enthusiasts."
+            ),
             "tags": ["hiking", "nature", "mountains", "norway", "rauland", "travel"],
-            "image_filename": None
+            "image_filename": "uploads/images/raulandmountains-unsplash.jpg"
         },
         {
             "title": "My Favorite Norwegian Cookbooks for Culinary Inspiration",
-            "content": "Looking to explore Norwegian cuisine? These are some of my favorite cookbooks that offer a fantastic introduction to traditional dishes and modern interpretations. Get ready to bring the flavors of Norway into your kitchen!",
+            "content": (
+                "Looking to explore Norwegian cuisine? These are some of my favorite cookbooks "
+                "that offer a fantastic introduction to traditional dishes and modern "
+                "interpretations. Get ready to bring the flavors of Norway into your kitchen!"
+            ),
             "tags": ["cookbooks", "food", "norwegian", "cuisine", "recipes", "review"],
-            "image_filename": None
+            "image_filename": "uploads/images/norwegianfood-unsplash.jpg"
         },
         {
             "title": "A Guide to Cycling Routes in Vestfold",
-            "content": "Vestfold is a fantastic region to explore by bike. From coastal paths to scenic countryside roads, there are cycling routes for all levels. This guide highlights some of the best options for a two-wheeled adventure.",
+            "content": (
+                "Vestfold is a fantastic region to explore by bike. From coastal paths to scenic "
+                "countryside roads, there are cycling routes for all levels. This guide highlights "
+                "some of the best options for a two-wheeled adventure."
+            ),
             "tags": ["cycling", "vestfold", "norway", "outdoors", "sport", "guide"],
-            "image_filename": None
+            "image_filename": "uploads/images/bikeride-unsplash.jpg"
         },
         {
             "title": "The Importance of Preserving Local History",
-            "content": "Preserving local history is crucial for understanding our roots and connecting with the past. Museums, archives, and historical societies play a vital role in this effort. Let's discuss the importance of supporting these institutions.",
+            "content": (
+                "Preserving local history is crucial for understanding our roots and connecting "
+                "with the past. Museums, archives, and historical societies play a vital role "
+                "in this effort. Let's discuss the importance of supporting these institutions."
+            ),
             "tags": ["history", "local", "preservation", "community", "culture"],
-            "image_filename": None
+            "image_filename": "uploads/images/localhistory-unsplash.jpg"
         },
         {
-            "title": "Book Review: \"Where the Crawdads Sing\" by Delia Owens",
-            "content": "\Where the Crawdads Sing\" is a beautifully written novel with a captivating story and vivid descriptions of the natural world. The characters are compelling, and the mystery at its heart keeps you hooked until the very end.",
+            "title": "Book Review: Where the Crawdads Sing by Delia Owens",
+            "content": (
+                "Where the Crawdads Sing is a beautifully written novel with a captivating story "
+                "and vivid descriptions of the natural world. The characters are compelling, and "
+                "the mystery at its heart keeps you hooked until the very end."
+            ),
             "tags": ["books", "review", "fiction", "nature", "reading"],
-            "image_filename": None
+            "image_filename": "uploads/images/DeliaOwens-unsplash.jpg"
         },
         {
             "title": "Tips for Reducing Food Waste at Home",
-            "content": "Food waste is a significant issue, but there are many simple steps we can take at home to minimize it. From meal planning to proper storage, every little effort makes a difference. Let's share our best food-saving tips!",
+            "content": (
+                "Food waste is a significant issue, but there are many simple steps we can take "
+                "at home to minimize it. From meal planning to proper storage, every little "
+                "effort makes a difference. Let's share our best food-saving tips!"
+            ),
             "tags": ["sustainability", "food waste", "home", "tips", "environment"],
-            "image_filename": None
+            "image_filename": "uploads/images/foodwaste-unsplash.jpg"
         },
         {
             "title": "A Visit to the Haugar Art Museum in Tønsberg",
-            "content": "The Haugar Art Museum is a cultural gem in Tønsberg, showcasing a diverse range of contemporary and historical art. My recent visit was inspiring, and I highly recommend checking out their current exhibitions.",
+            "content": (
+                "The Haugar Art Museum is a cultural gem in Tønsberg, showcasing a diverse range "
+                "of contemporary and historical art. My recent visit was inspiring, and I highly "
+                "recommend checking out their current exhibitions."
+            ),
             "tags": ["art", "museum", "tønsberg", "culture", "local"],
-            "image_filename": None
+            "image_filename": "uploads/images/artmuseum-unsplash.jpg"
         },
         {
             "title": "Easy DIY Home Decor Projects to Spruce Up Your Space",
-            "content": "Looking to refresh your home without breaking the bank? DIY home decor projects are a fun and creative way to personalize your space. Here are a few easy ideas to get you started..",
+            "content": (
+                "Looking to refresh your home without breaking the bank? DIY home decor projects "
+                "are a fun and creative way to personalize your space. Here are a few easy ideas "
+                "to get you started.."
+            ),
             "tags": ["diy", "home decor", "crafts", "interior design", "budget"],
-            "image_filename": None
+            "image_filename": "uploads/images/diy-unsplash.jpg"
         },
         {
             "title": "The Benefits of Spending Time in Nature for Well-being",
-            "content": "In our increasingly fast-paced and technology-driven lives,it's easy to become disconnected from the natural world. However, numerous studies have shown that spending time in nature offers profound benefits for both our physical and mental well-being. Whether it's a leisurely walk in a local park, an invigorating hike through a dense forest, or simply sitting by a tranquil lake, these moments of connection with the natural world can significantly improve our mood and reduce stress levels. The positive impacts extend beyond just our mental state. Physically, spending time outdoors encourages movement and exercise, contributing to better cardiovascular health and stronger immune systems. Breathing in fresh air, often cleaner and richer in oxygen than indoor environments, can revitalize our bodies. Sunlight exposure, in moderation, helps our bodies produce essential Vitamin D, crucial for bone health and overall immunity. Mentally and emotionally, nature provides a sanctuary from the demands of daily life. The sights, sounds, and smells of the natural world can have a calming effect, lowering cortisol levels (the stress hormone) and promoting a sense of peace. Studies have even shown that spending time in nature can improve focus and cognitive function, reduce symptoms of anxiety and depression, and foster a greater sense of creativity. Even small doses of nature can make a difference. Incorporating natural elements into our daily routines, such as bringing plants indoors or finding a green space during a lunch break, can offer subtle yet significant benefits. The key is to intentionally seek out opportunities to connect with the natural world, allowing ourselves to be present in the moment and absorb its restorative power. So, step outside, breathe deeply, and experience the incredible benefits that nature has to offer.",
+            "content": (
+                "In our increasingly fast-paced and technology-driven lives, it's easy to become disconnected "
+                "from the natural world. However, numerous studies have shown that spending time in nature "
+                "offers profound benefits for both our physical and mental well-being. Whether it's a leisurely "
+                "walk in a local park, an invigorating hike through a dense forest, or simply sitting by a "
+                "tranquil lake, these moments of connection with the natural world can significantly improve "
+                "our mood and reduce stress levels. The positive impacts extend beyond just our mental state. "
+                "Physically, spending time outdoors encourages movement and exercise, contributing to better "
+                "cardiovascular health and stronger immune systems. Breathing in fresh air, often cleaner and "
+                "richer in oxygen than indoor environments, can revitalize our bodies. Sunlight exposure, in "
+                "moderation, helps our bodies produce essential Vitamin D, crucial for bone health and overall "
+                "immunity. Mentally and emotionally, nature provides a sanctuary from the demands of daily life. "
+                "The sights, sounds, and smells of the natural world can have a calming effect, lowering cortisol "
+                "levels (the stress hormone) and promoting a sense of peace. Studies have even shown that spending "
+                "time in nature can improve focus and cognitive function, reduce symptoms of anxiety and depression, "
+                "and foster a greater sense of creativity. Even small doses of nature can make a difference. "
+                "Incorporating natural elements into our daily routines, such as bringing plants indoors or finding "
+                "a green space during a lunch break, can offer subtle yet significant benefits. The key is to "
+                "intentionally seek out opportunities to connect with the natural world, allowing ourselves to be "
+                "present in the moment and absorb its restorative power. So, step outside, breathe deeply, and "
+                "experience the incredible benefits that nature has to offer."
+            ),
             "tags": ["nature", "wellness", "health", "outdoors", "mental health"],
-            "image_filename": "uploads/images/nature_wellbeing.jpg"
+            "image_filename": "uploads/images/naturewellbeing-unsplash.jpg"
         },
         {
             "title": "Exploring the Coastal Path from Stavern to Nevlunghavn",
-            "content": "The coastal path between Stavern and Nevlunghavn offers stunning views of the Skagerrak coastline. It's a beautiful walk with charming harbors and picturesque scenery along the way.",
+            "content": (
+                "The coastal path between Stavern and Nevlunghavn offers stunning views of the "
+                "Skagerrak coastline. It's a beautiful walk with charming harbors and picturesque "
+                "scenery along the way."
+            ),
             "tags": ["hiking", "coastal", "norway", "stavern", "travel", "nature"],
-            "image_filename": None
+            "image_filename": "uploads/images/coastalpath-unsplash.jpg"
         },
         {
             "title": "My Journey Learning the Norwegian Language",
-            "content": "Learning a new language can be challenging but also incredibly rewarding. I've been on a journey to learn Norwegian, and while there have been ups and downs, I'm enjoying the process of connecting with the local culture on a deeper level. Any fellow language learners out there?",
+            "content": (
+                "Learning a new language can be challenging but also incredibly rewarding. I've "
+                "been on a journey to learn Norwegian, and while there have been ups and downs, "
+                "I'm enjoying the process of connecting with the local culture on a deeper level. "
+                "Any fellow language learners out there?"
+            ),
             "tags": ["language", "learning", "norwegian", "culture", "personal"],
-            "image_filename": None
+            "image_filename": "uploads/images/norwegian-unsplash.jpg"
         },
         {
             "title": "The Best Picnic Spots in the Tønsberg Area",
-            "content": "With the weather getting warmer, it's the perfect time for a picnic! Tønsberg and its surroundings offer plenty of beautiful spots to enjoy a meal outdoors. Here are a few of my favorite picnic locations.",
+            "content": (
+                "With the weather getting warmer, it's the perfect time for a picnic! Tønsberg "
+                "and its surroundings offer plenty of beautiful spots to enjoy a meal outdoors. "
+                "Here are a few of my favorite picnic locations."
+            ),
             "tags": ["picnic", "tønsberg", "outdoors", "summer", "local", "food"],
-            "image_filename": None
+            "image_filename": "uploads/images/picnic-unsplash.jpg"
         },
         {
             "title": "Supporting Local Farmers Markets in Vestfold",
-            "content": "Farmers markets are a fantastic way to access fresh, seasonal produce and support local farmers. Vestfold has some great markets offering a variety of goods. Let's celebrate the bounty of our region!",
+            "content": (
+                "Farmers markets are a fantastic way to access fresh, seasonal produce and support "
+                "local farmers. Vestfold has some great markets offering a variety of goods. Let's "
+                "celebrate the bounty of our region!"
+            ),
             "tags": ["farmers market", "local", "food", "vestfold", "support local", "community"],
-            "image_filename": None
+            "image_filename": "uploads/images/farmersmarked-unsplash.jpg"
         },
         {
             "title": "A Guide to Birdwatching in Vestfold's Wetlands",
-            "content": "Vestfold's wetlands are a haven for birdlife. Birdwatching can be a relaxing and rewarding hobby, and there are several excellent spots in the region to observe various species.",
+            "content": (
+                "Vestfold's wetlands are a haven for birdlife. Birdwatching can be a relaxing and "
+                "rewarding hobby, and there are several excellent spots in the region to observe "
+                "various species."
+            ),
             "tags": ["birdwatching", "nature", "vestfold", "wetlands", "hobby", "wildlife"],
-            "image_filename": None
+            "image_filename": "uploads/images/birdwatching-unsplash.jpg"
         },
         {
             "title": "Reflecting on the Beauty of the Changing Seasons in Norway",
-            "content": "Norway's distinct seasons each offer their own unique beauty, from the vibrant greens of summer to the snowy landscapes of winter. Taking the time to appreciate these changes can bring a sense of wonder and connection to nature.",
+            "content": (
+                "Norway's distinct seasons each offer their own unique beauty, from the vibrant "
+                "greens of summer to the snowy landscapes of winter. Taking the time to appreciate "
+                "these changes can bring a sense of wonder and connection to nature."
+            ),
             "tags": ["seasons", "norway", "nature", "reflection", "beauty"],
-            "image_filename": None
+            "image_filename": "uploads/images/seasons-unsplash.jpg"
         }
     ]
 
