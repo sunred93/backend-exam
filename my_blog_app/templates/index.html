@@ -7,10 +7,23 @@
         <h1>Blog Posts</h1>
         <a href="{{ url_for('create_post') }}" class="btn btn-success">Create New Post</a>
     </div>
+        <form id="searchForm" class="search-input-container mb-4">
+      <div class="input-group">
+        <span class="input-group-text" id="basic-addon1">🔍</span>
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Search posts by title..."
+          aria-label="Search posts"
+          aria-describedby="basic-addon1"
+        />
+      </div>
+    </form>
 
     {% if posts %}
         {% for post in posts %}
-        <article class="post-summary mb-4 p-3 border rounded shadow-sm">
+        <article class="post-summary mb-4 p-3 border rounded shadow-sm" data-title="{{ post['title'] | lower }}">
             <div class="row">
                 {% if post.image_filename %}
                 <div class="col-md-3 mb-3 mb-md-0">
@@ -35,7 +48,7 @@
                         </p>
                     {% endif %}
 
-                    {# Optional: Add a short excerpt if desired #}
+                    
                     {# <p>{{ post.content | truncate(150) }}</p> #}
 
                     <div class="post-actions mt-2">
@@ -54,4 +67,25 @@
             No posts yet! <a href="{{ url_for('create_post') }}" class="alert-link">Create one?</a>
         </div>
     {% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  // Filters posts based on their titles
+  const searchInput = document.getElementById("searchInput");
+  const posts = document.querySelectorAll(".post-summary"); // Updated selector to match article class
+
+  searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+
+    posts.forEach((post) => {
+      // Use dataset.title to get the title from the data-title attribute
+      const title = post.dataset.title;
+      if (title.includes(query)) {
+        post.style.display = ""; // Show the post
+      } else {
+        post.style.display = "none"; // Hide the post
+      }
+    });
+  });
+</script>
 {% endblock %}
