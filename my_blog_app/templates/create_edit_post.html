@@ -3,12 +3,8 @@
 <h1>{% if post %}Edit Post{% else %}Create New Post{% endif %}</h1>
 
 <!-- IMPORTANT: Add enctype for file uploads -->
-<form
-  method="post"
-  enctype="multipart/form-data"
-  class="needs-validation"
-  novalidate
->
+<!-- prettier-ignore -->
+<form method="post" enctype="multipart/form-data" class="needs-validation" novalidate></form>
   <div class="mb-3">
     <label for="title" class="form-label">Title</label>
     <input
