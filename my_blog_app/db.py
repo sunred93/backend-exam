@@ -35,12 +35,11 @@ def save_image(image_file_storage):
     if image_file_storage and allowed_file(image_file_storage.filename):
         # Create a unique filename to avoid conflicts and for security
         _, ext = os.path.splitext(image_file_storage.filename)
-        # Use secure_filename from werkzeug if you want extra sanitization,
-        # but UUID is generally safer against path traversal etc.
+        # using UUID for safety against path traversal etc.
         unique_filename = f"{uuid.uuid4().hex}{ext}"
 
         # Ensure the upload directory exists within the static folder
-        # Use current_app.static_folder which points to your 'static' directory
+        # Use current_app.static_folder which points to 'static' directory
         # Make sure current_app is available (this function should be called within a request context)
         if not current_app:
              print("Error: Cannot access current_app. Function called outside of application context.")
@@ -53,7 +52,6 @@ def save_image(image_file_storage):
         try:
             image_file_storage.save(save_to)
             # Return the relative path (from static) to store in DB
-            # Use forward slashes for web compatibility
             relative_path = os.path.join(IMAGE_UPLOAD_FOLDER, unique_filename).replace("\\", "/")
             current_app.logger.info(f"Saved image: {relative_path}")
             return relative_path
@@ -82,7 +80,6 @@ def delete_image_file(relative_image_path):
             current_app.logger.info(f"Deleted image file: {image_path_full}")
             return True
         else:
-            # It's okay if the file doesn't exist, maybe it was already deleted
             current_app.logger.warning(f"Attempted to delete non-existent image: {image_path_full}")
             return False # Indicate file wasn't found/deleted now
     except OSError as e:
@@ -118,9 +115,7 @@ def close_db(e=None):
 def init_app(app):
     """Register database functions with the Flask app."""
     app.teardown_appcontext(close_db)
-    # Add the init-db command defined below to the Flask CLI
     app.cli.add_command(init_db_command_context)
-    # Note: seed-db command is defined directly in app.py, so not registered here
 
 
 # --- Database Initialization ---

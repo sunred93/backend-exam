@@ -1,5 +1,3 @@
-# app.py
-
 import os
 import sqlite3 # Import sqlite3 to catch its specific errors if needed
 import click   # Import click for CLI commands
@@ -11,7 +9,7 @@ from flask import Flask, render_template, abort, request, redirect, url_for, fla
 from dotenv import load_dotenv
 import db
 from faker import Faker
-# Optional: For secure filenames if you choose to use it alongside UUID
+# Optional: For secure filenames if choosen to use it alongside UUID
 # from werkzeug.utils import secure_filename
 
 # Load environment variables from .env file
@@ -34,17 +32,14 @@ def inject_now():
     # Using utcnow() is generally recommended for server-side time
     return {'now': datetime.datetime.now(timezone.utc)}
 
-# --- Database Seeding Command (Updated for image_filename) ---
+# --- Database Seeding Command ---
 @app.cli.command('seed-db')
 @click.option('--posts', default=25, help='Number of posts to create (max based on static data).')
 def seed_db_command(posts):
     """Seeds the database with sample blog posts, tags, and placeholder images."""
     fake = Faker()
 
-    # Define your static posts (Add image_filename, can be None or a path)
-    # NOTE: Ensure these image files actually exist in static/uploads/images/
-    #       or handle cases where they might be missing in templates.
-    #       Using None is safer if you don't have placeholder images ready.
+    # static data 
     static_posts = [
         {
             "title": "Discovering the Charm of Gamlebyen in Fredrikstad",
@@ -454,8 +449,6 @@ def create_post():
                 if not saved_image_filename:
                     # save_image returns None on failure (e.g., wrong file type)
                     flash('Image upload failed. Allowed types: png, jpg, jpeg, gif.', 'warning')
-                    # Decide if you want to proceed without image or stop
-                    # Let's proceed without image for now, but keep the warning
                     pass # saved_image_filename remains None
 
             # Add post to DB, passing the saved filename (or None)
@@ -475,7 +468,7 @@ def create_post():
                 return redirect(url_for('post', post_id=post_id))
             else:
                 flash('Failed to create post in database.', 'error')
-                # If post creation failed, maybe delete the uploaded image if it exists?
+                # If post creation failed, delets image file. 
                 if saved_image_filename:
                      db.delete_image_file(saved_image_filename) # Attempt to clean up
                 return render_template('create_edit_post.html',
@@ -523,14 +516,13 @@ def edit_post(post_id):
             saved_path = db.save_image(image_file)
             if saved_path:
                 new_image_filename = saved_path
-                update_image_flag = True # We have a new image, so update the DB field
+                update_image_flag = True #new image, so updates the DB field
                 # Delete the old image *after* successfully saving the new one
                 if old_image_filename:
                     db.delete_image_file(old_image_filename)
             else:
                 # Failed to save new image (e.g., wrong type)
                 flash('New image upload failed. Allowed types: png, jpg, jpeg, gif. Image not updated.', 'warning')
-                # Keep update_image_flag as False, new_image_filename as None
 
         # --- Update Post in Database ---
         # Pass the new filename (or None) and the update flag
@@ -539,7 +531,7 @@ def edit_post(post_id):
                                  update_image=update_image_flag)
 
         if updated:
-            # Update tags (existing logic)
+            # Update tags
             db.unlink_all_tags_for_post(post_id)
             tag_names = process_tags(tags_string)
             for tag_name in tag_names:
@@ -553,7 +545,7 @@ def edit_post(post_id):
             return redirect(url_for('post', post_id=post_id))
         else:
             flash('Failed to update post in database.', 'error')
-            # If update failed, maybe delete the newly uploaded image if it exists?
+            # If update failed, deletes the newly uploaded image if it exists
             if update_image_flag and new_image_filename:
                  db.delete_image_file(new_image_filename) # Attempt cleanup
             # Re-render form with entered data
