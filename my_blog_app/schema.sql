@@ -40,9 +40,5 @@ CREATE TABLE post_tags (
     FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE  -- If a tag is deleted, remove its post associations
 );
 
--- Optional: Indexes can improve query performance, especially on larger tables
-CREATE INDEX idx_posts_published_date ON posts (published_date);
-CREATE INDEX idx_comments_post_id ON comments (post_id);
-CREATE INDEX idx_tags_name ON tags (name);
-CREATE INDEX idx_post_tags_tag_id ON post_tags (tag_id);
+
 
