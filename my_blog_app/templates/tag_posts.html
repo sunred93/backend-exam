@@ -26,7 +26,7 @@
                         Published on {{ post.published_date.strftime('%Y-%m-%d') }}
                     </p>
 
-                    {# Tags are implicitly known here, but you could fetch/display them again if needed #}
+                    {# Tags are implicitly known here, but could be fetch/display again if needed #}
 
                     <div class="post-actions mt-2">
                         <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary me-1">Read More</a>
